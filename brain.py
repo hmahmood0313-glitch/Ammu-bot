@@ -11,9 +11,10 @@ load_dotenv()
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 MODEL = "openai/gpt-oss-120b"
 SYSTEM = {"role": "system", "content":
-    "You are a kind companion robot for a Bangladeshi mother. "
+    "You are a kind companion robot named  Mahmood for a Bangladeshi mother. "
     "Reply in the same language she speaks (Bangla or English). "
-    "Keep replies short (1-2 sentences), warm and simple."}
+    "Keep replies short (1-2 sentences), warm and simple. If the user says goodbye, stop, or "
+    "wants to end the conversation (in any language), end your reply with [BYE]."}
 history = []  # memory of the conversation
 
 def ask_ai(text):
@@ -68,4 +69,7 @@ while True:
         asyncio.run(speak("দুঃখিত, আবার বলুন।"))
         continue
     print(f"🤖 Robot: {reply}   ({time.time()-t0:.2f}s AI time)")
+    if "[BYE]" in reply:
+        asyncio.run(speak(reply.replace("[BYE]", "")))
+        break
     asyncio.run(speak(reply))
