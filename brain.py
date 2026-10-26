@@ -26,7 +26,7 @@ def ask_ai(text):
     return reply
 
 rec = sr.Recognizer()
-rec.pause_threshold = 1.0
+rec.pause_threshold = 0.7
 pygame.mixer.init()
 
 def recognize(audio, lang):
@@ -57,7 +57,9 @@ async def speak(text):
     pygame.mixer.music.unload()
 
 while True:
+    t_stt = time.time()
     said = listen()
+    stt_time = time.time() - t_stt 
     if not said:
         continue
     print(" Ammu:", said)
@@ -68,8 +70,12 @@ while True:
         print("⚠️ AI error:", e)
         asyncio.run(speak("দুঃখিত, আবার বলুন।"))
         continue
+    ai_time = time.time() - t0
     print(f"🤖 Robot: {reply}   ({time.time()-t0:.2f}s AI time)")
     if "[BYE]" in reply:
         asyncio.run(speak(reply.replace("[BYE]", "")))
         break
+    t_tts = time.time()
     asyncio.run(speak(reply))
+    tts_time = time.time() - t_tts
+    print(f"👂 STT {stt_time:.2f}s | 🧠 AI {ai_time:.2f}s | 🗣️ TTS {tts_time:.2f}s")
